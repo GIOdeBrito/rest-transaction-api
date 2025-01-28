@@ -22,31 +22,33 @@ namespace BackEndApi.Controllers
 			return Ok(json);
 		}
 
-		[HttpGet("auth-test")]
-		[Authorize]
-		public IActionResult GetJson ([FromBody] User user)
-		{
-			object json = new
-			{
-				message = "Accepted!"
-			};
-
-			return Ok(json);
-		}
-
 		[HttpGet("db-test")]
 		public IActionResult DbTest ()
 		{
 			DatabaseConnection db = new ();
 
-			List<User> rows = db.Query<User>("SELECT * FROM USERS");
+			User[] rows = db.Query<User>("SELECT * FROM USERS");
 
-			foreach(var row in rows.ToArray())
+			foreach(User row in rows.ToArray())
 			{
 				Console.WriteLine($"Name: {row.Name} | Mail: {row.Mail}");
 			}
 
 			return Ok("Done");
+		}
+
+		[HttpGet("db-test-bind")]
+		public IActionResult DbTestBind ()
+		{
+			DatabaseConnection db = new ();
+
+			object queryParams = new {
+				Id = 2
+			};
+
+			User[] rows = db.Query<User>("SELECT * FROM USERS WHERE ID = @Id", queryParams);
+
+			return Ok($"ID {rows[0].Id} name: {rows[0].Name}");
 		}
 
 		[HttpGet("get-token")]
@@ -57,6 +59,12 @@ namespace BackEndApi.Controllers
 			string token = JwtToken.GetToken(user);
 
 			return Ok(token);
+		}
+
+		[HttpPost("auth")]
+		public IActionResult GetToken ([FromBody] User user)
+		{
+			return Ok("");
 		}
 	}
 }

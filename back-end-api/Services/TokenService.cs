@@ -13,7 +13,7 @@ namespace BackEndApi.Services
 		{
 			JwtSecurityTokenHandler handler = new();
 
-			string jsonHash = Environment.GetEnvironmentVariable("JSON_TOKEN_SECRET");
+			string jsonHash = Environment.GetEnvironmentVariable("JWT_TOKEN_SECRET");
 
 			byte[] key = Encoding.ASCII.GetBytes(jsonHash);
 			SigningCredentials credentials = new (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
