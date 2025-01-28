@@ -1,6 +1,8 @@
 using System;
+using System.Reflection;
 using Npgsql;
 using dotenv.net;
+using BackEndApi.Models;
 
 namespace BackEndApi.Database
 {
@@ -18,8 +20,6 @@ namespace BackEndApi.Database
 			string dbHost = Environment.GetEnvironmentVariable("DATABASE_HOST");
 
 			this.connectionString = $"Server=app;Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
-
-			//Console.WriteLine(this.connectionString);
 		}
 
 		~DatabaseConnection ()
@@ -44,7 +44,7 @@ namespace BackEndApi.Database
 
 		private void Close ()
 		{
-			if(this.connection == null)
+			if(this.connection is null)
 			{
 				return;
 			}
@@ -56,19 +56,54 @@ namespace BackEndApi.Database
 			Console.WriteLine("Database connection closed");
 		}
 
-		public void Query (string sql)
+		public List<T> Query<T>(string sql) where T : new()
 		{
+			List<T> items = new();
+
 			try
 			{
 				this.ConnectTo();
 
-				NpgsqlCommand cmd = new NpgsqlCommand(sql, this.connection);
-				NpgsqlDataReader reader = cmd.ExecuteReader();
-
-				while(reader.Read())
+				using(NpgsqlCommand cmd = new NpgsqlCommand(sql, this.connection))
+				using(NpgsqlDataReader reader = cmd.ExecuteReader())
 				{
-					//var val = reader.GetValue(reader.GetOrdinal(0));
-					Console.WriteLine(reader.FieldCount);
+					while(reader.Read())
+					{
+						T row = new T();
+
+						for(int i = 0; i < reader.FieldCount; i++)
+						{
+							// Columns are always strings
+							string columnName = reader.GetName(i);
+
+							FieldInfo field = typeof(T).GetField(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+							//PropertyInfo property = typeof(T).GetProperty(columnName);
+
+							if(field is null)
+							{
+								continue;
+							}
+
+							// The type of the field varies
+							Type columnType = reader.GetFieldType(i);
+							dynamic rowValue = null;
+
+							if(columnType == typeof(int))
+							{
+								rowValue = reader.GetInt32(i);
+							}
+
+							if(columnType == typeof(string))
+							{
+								rowValue = reader.GetString(i);
+							}
+
+							field.SetValue(row, rowValue);
+							//property.SetValue(row, rowValue);
+						}
+
+						items.Add(row);
+					}
 				}
 			}
 			catch(Exception ex)
@@ -79,11 +114,8 @@ namespace BackEndApi.Database
 			{
 				this.Close();
 			}
-		}
 
-		public void Exec (string sql)
-		{
-
+			return items;
 		}
 	}
 }

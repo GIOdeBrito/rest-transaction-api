@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using BackEndApi.Models;
 using BackEndApi.Database;
+using BackEndApi.Services;
 
 namespace BackEndApi.Controllers
 {
@@ -23,7 +24,7 @@ namespace BackEndApi.Controllers
 
 		[HttpGet("auth-test")]
 		[Authorize]
-		public IActionResult JToken ([FromBody] Models.User user)
+		public IActionResult GetJson ([FromBody] User user)
 		{
 			object json = new
 			{
@@ -33,14 +34,29 @@ namespace BackEndApi.Controllers
 			return Ok(json);
 		}
 
-		[HttpGet("tdb")]
+		[HttpGet("db-test")]
 		public IActionResult DbTest ()
 		{
 			DatabaseConnection db = new ();
 
-			db.Query("SELECT * FROM USERS");
+			List<User> rows = db.Query<User>("SELECT * FROM USERS");
 
-			return Ok("done");
+			foreach(var row in rows.ToArray())
+			{
+				Console.WriteLine($"Name: {row.Name} | Mail: {row.Mail}");
+			}
+
+			return Ok("Done");
+		}
+
+		[HttpGet("get-token")]
+		public IActionResult GetToken ()
+		{
+			User user = new User();
+
+			string token = JwtToken.GetToken(user);
+
+			return Ok(token);
 		}
 	}
 }
