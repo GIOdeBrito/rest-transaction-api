@@ -11,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 builder.Services.AddMvc();
 
+// TODO: Add policy
+
 // Add Bearer authentication
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
 {

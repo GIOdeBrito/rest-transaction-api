@@ -11,21 +11,10 @@ namespace BackEndApi.Controllers
 	[Route("api/v1/[controller]")]
 	public class TestController : ControllerBase
 	{
-		[HttpGet("time")]
-		public IActionResult Time ()
-		{
-			object json = new
-			{
-				time = DateTime.Now.ToString("HH\\hmm", System.Globalization.DateTimeFormatInfo.InvariantInfo)
-			};
-
-			return Ok(json);
-		}
-
 		[HttpGet("db-test")]
 		public IActionResult DbTest ()
 		{
-			DatabaseConnection db = new ();
+			PostgresDatabase db = new ();
 
 			User[] rows = db.Query<User>("SELECT * FROM USERS");
 
@@ -40,7 +29,7 @@ namespace BackEndApi.Controllers
 		[HttpGet("db-test-bind")]
 		public IActionResult DbTestBind ()
 		{
-			DatabaseConnection db = new ();
+			PostgresDatabase db = new ();
 
 			object queryParams = new {
 				Id = 2
@@ -51,20 +40,15 @@ namespace BackEndApi.Controllers
 			return Ok($"ID {rows[0].Id} name: {rows[0].Name}");
 		}
 
-		[HttpGet("get-token")]
-		public IActionResult GetToken ()
+		[HttpPost("user-auth")]
+		[Authorize("User")]
+		public IActionResult UserAuthTest ()
 		{
 			User user = new User();
 
 			string token = JwtToken.GetToken(user);
 
 			return Ok(token);
-		}
-
-		[HttpPost("auth")]
-		public IActionResult GetToken ([FromBody] User user)
-		{
-			return Ok("");
 		}
 	}
 }

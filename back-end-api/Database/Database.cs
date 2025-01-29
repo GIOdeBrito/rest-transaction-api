@@ -6,13 +6,13 @@ using BackEndApi.Models;
 
 namespace BackEndApi.Database
 {
-	public class DatabaseConnection
+	public class PostgresDatabase
 	{
 		private string connectionString = "";
 		private NpgsqlConnection? connection = null;
 		private NpgsqlCommand? cmd = null;
 
-		public DatabaseConnection ()
+		public PostgresDatabase ()
 		{
 			string dbUser = Environment.GetEnvironmentVariable("DATABASE_USER");
 			string dbSecret = Environment.GetEnvironmentVariable("DATABASE_SCRT");
@@ -23,7 +23,7 @@ namespace BackEndApi.Database
 			this.connectionString = $"Server=app;Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
 		}
 
-		~DatabaseConnection ()
+		~PostgresDatabase ()
 		{
 			this.Close();
 		}
@@ -88,6 +88,7 @@ namespace BackEndApi.Database
 					// Bind query params
 					foreach(KeyValuePair<string, dynamic> kvp in acquiredParams)
 					{
+						//Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
 						cmd.Parameters.AddWithValue(kvp.Key, kvp.Value);
 					}
 				}
