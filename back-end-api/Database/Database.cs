@@ -20,7 +20,7 @@ namespace BackEndApi.Database
 			string dbPort = Environment.GetEnvironmentVariable("DATABASE_PORT");
 			string dbHost = Environment.GetEnvironmentVariable("DATABASE_HOST");
 
-			this.connectionString = $"Server=app;Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
+			this.connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
 		}
 
 		~PostgresDatabase ()
@@ -104,18 +104,24 @@ namespace BackEndApi.Database
 							// Columns are always strings
 							string columnName = reader.GetName(i);
 
-							FieldInfo field = typeof(T).GetField(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+							FieldInfo? field = typeof(T).GetField(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+							PropertyInfo? property = null;
 
 							if(field is null)
+							{
+								// If no field was found, looks for a property instead
+								property = typeof(T).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+							}
+
+							// If no property or field was found, skip this iteration
+							if(field is null && property is null)
 							{
 								continue;
 							}
 
-							//PropertyInfo property = typeof(T).GetProperty(columnName);
-
 							// The type of the field varies
 							Type columnType = reader.GetFieldType(i);
-							dynamic rowValue = null;
+							dynamic? rowValue = null;
 
 							if(columnType == typeof(int))
 							{
@@ -127,8 +133,10 @@ namespace BackEndApi.Database
 								rowValue = reader.GetString(i);
 							}
 
-							field.SetValue(row, rowValue);
-							//property.SetValue(row, rowValue);
+							//Console.WriteLine($"Row: {row} Value: {rowValue}");
+
+							field?.SetValue(row, rowValue);
+							property?.SetValue(row, rowValue);
 						}
 
 						items.Add(row);

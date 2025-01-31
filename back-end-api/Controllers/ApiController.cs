@@ -23,7 +23,7 @@ namespace BackEndApi.Controllers
 		}
 
 		[HttpPost("auth")]
-		public IActionResult AuthUser ([FromBody] User user)
+		public IActionResult GetUserToken ([FromBody] User user)
 		{
 			if(user is null)
 			{
@@ -49,6 +49,13 @@ namespace BackEndApi.Controllers
 			string token = JwtToken.GetToken(user);
 
 			return Ok(new { error = false, result = token });
+		}
+
+		[HttpPost("auth")]
+		[Authorize(Roles = "User")]
+		public IActionResult GetUserToken ([FromBody] User user)
+		{
+
 		}
 	}
 }

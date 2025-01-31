@@ -22,7 +22,9 @@ namespace BackEndApi.Services
 			{
 				SigningCredentials = credentials,
 				Expires = DateTime.UtcNow.AddHours(1),
-				Subject = GetClaims(user)
+				Subject = GetClaims(user),
+				Issuer = "http://localhost:5000",
+				Audience = "transaction-api"
 			};
 
 			SecurityToken token = handler.CreateToken(tokenDescriptor);
@@ -38,7 +40,8 @@ namespace BackEndApi.Services
 			var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Name),
-				new Claim(ClaimTypes.Role, user.Role)
+				new Claim(ClaimTypes.Role, user.Role),
+				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             return new ClaimsIdentity(claims);

@@ -41,14 +41,10 @@ namespace BackEndApi.Controllers
 		}
 
 		[HttpPost("user-auth")]
-		[Authorize("User")]
+		[Authorize(Roles = "User")]
 		public IActionResult UserAuthTest ()
 		{
-			User user = new User();
-
-			string token = JwtToken.GetToken(user);
-
-			return Ok(token);
+			return Ok("Allowed");
 		}
 	}
 }
