@@ -35,6 +35,11 @@ var app = builder.Build();
 
 var logger = app.Logger;
 
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyHeader().WithMethods("GET", "POST");
+});
+
 // Only allow for HTTPS redirection on production
 if(!builder.Environment.IsDevelopment())
 {
@@ -47,17 +52,15 @@ else
 	logger.LogInformation("Development");
 }
 
-app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin().AllowAnyHeader().WithMethods("GET", "POST");
-});
-
 // Map endpoints
 app.MapControllers();
 
 // Authentication
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Allow access to the wwwroot folder
+app.UseStaticFiles();
 
 // Run the application
 app.Run();

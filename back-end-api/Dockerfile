@@ -22,6 +22,7 @@ WORKDIR /app
 
 COPY --from=build /app/bin/Release/net8.0/ .
 COPY back-end-api/.env .
+COPY --from=build /app/wwwroot ./wwwroot
 
 RUN chown -R user:usergroup /app
 
