@@ -1,0 +1,11 @@
+@{
+	/* Navbar View */
+}
+
+<nav>
+	<h2 class="color-white">Welcome, @ViewData["Name"]!</h2>
+
+	<form action="/api/v1/auth/logoff" method="POST">
+		<img class="nav-icon" src="assets/icon/poweroff.webp" alt="logoff">
+	</form>
+</nav>

@@ -29,12 +29,6 @@ nav > * {
 	margin: 0 .5rem;
 }
 
-header {
-	padding: 1rem;
-	background-color: var(--color-dark);
-	color: #fff;
-}
-
 footer {
 	margin: auto auto 0 auto;
 }
@@ -91,5 +85,11 @@ footer {
 
 .nav-icon:hover {
 	transform: scale(1.065);
+}
+
+.top-header {
+	padding: 1rem;
+	background-color: var(--color-dark);
+	color: #fff;
 }
 
