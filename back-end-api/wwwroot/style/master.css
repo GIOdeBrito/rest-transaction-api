@@ -17,6 +17,18 @@ body {
 	font-family: sans-serif;
 }
 
+nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--color-dark);
+	padding: 1rem;
+}
+
+nav > * {
+	margin: 0 .5rem;
+}
+
 header {
 	padding: 1rem;
 	background-color: var(--color-dark);
@@ -65,5 +77,19 @@ footer {
 .input-control:focus {
 	border-color: #000000b2;
 	box-shadow: 0 0 .25rem #00000059;
+}
+
+.color-white {
+	color: #fff;
+}
+
+.nav-icon {
+	height: 30px;
+	cursor: pointer;
+	transition: transform 280ms ease-in-out;
+}
+
+.nav-icon:hover {
+	transform: scale(1.065);
 }
 

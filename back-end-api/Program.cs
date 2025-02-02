@@ -13,6 +13,13 @@ DotEnv.Load();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 builder.Services.AddMvc();
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+	// Session expires if for two minutes there is no activity
+	options.IdleTimeout = TimeSpan.FromSeconds(120);
+});
 
 // Add Bearer authentication
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
@@ -61,6 +68,9 @@ app.UseAuthorization();
 
 // Allow access to the wwwroot folder
 app.UseStaticFiles();
+
+// Allows for user session creation
+app.UseSession();
 
 // Run the application
 app.Run();

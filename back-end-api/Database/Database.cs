@@ -71,7 +71,7 @@ namespace BackEndApi.Database
 			this.cmd = null;
 		}
 
-		public T[] Query<T>(string sql, object sqlParams = null) where T : new()
+		public T[] Query<T>(string sql, object? sqlParams = null) where T : new()
 		{
 			List<T> items = new();
 
