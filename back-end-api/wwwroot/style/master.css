@@ -17,18 +17,6 @@ body {
 	font-family: sans-serif;
 }
 
-nav {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: var(--color-dark);
-	padding: 1rem;
-}
-
-nav > * {
-	margin: 0 .5rem;
-}
-
 footer {
 	margin: auto auto 0 auto;
 }

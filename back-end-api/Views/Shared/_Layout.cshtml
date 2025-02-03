@@ -5,8 +5,10 @@
 		<meta name="author" content="GIOdeBrito">
 		<meta name="description" content="Transaction Website">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>@ViewData["Title"]</title>
+		<title>@ViewData["Title"] — Transaction App</title>
 		<link rel="stylesheet" href="/style/master.css">
+		@RenderSection("Style", required: false)
+		@RenderSection("Script", required: false)
 	</head>
 
 	<body>

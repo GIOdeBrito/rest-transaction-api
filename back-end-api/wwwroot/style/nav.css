@@ -1,0 +1,53 @@
+
+nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--color-dark);
+	padding: 1rem;
+}
+
+nav > *:not(div[role="dropdown-menu"]) {
+	margin: 0 .5rem;
+}
+
+nav > img:hover + div, nav > div[role="dropdown-menu"]:hover {
+	transform: translateY(50px);
+	opacity: 1;
+}
+
+nav > div[role="dropdown-menu"] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	transform: translateY(70px);
+	background-color: var(--color-dark);
+	margin: 0;
+	transition: transform 300ms ease, opacity 350ms ease;
+	opacity: 0;
+}
+
+nav > div[role="dropdown-menu"] > form {
+	display: flex;
+	align-items: center;
+	text-align: center;
+	margin: 1rem;
+	padding: 0 1rem;
+}
+
+nav > div[role="dropdown-menu"] > form:hover {
+	background-color: #373737;
+}
+
+nav > div[role="dropdown-menu"] > form > input[type="submit"] {
+	background-color: #0000;
+	border: none;
+	color: #fff;
+	padding: 1rem .25rem;
+	cursor: pointer;
+}
+
+nav > div[role="dropdown-menu"] > form > img {
+	height: 20px;
+}
+
