@@ -23,31 +23,31 @@ nav > div[role="dropdown-menu"] {
 	transform: translateY(70px);
 	background-color: var(--color-dark);
 	margin: 0;
+	padding: 1rem;
 	transition: transform 300ms ease, opacity 350ms ease;
 	opacity: 0;
 }
 
-nav > div[role="dropdown-menu"] > form {
+nav > div[role="dropdown-menu"] > a, nav > div[role="dropdown-menu"] > form {
 	display: flex;
 	align-items: center;
 	text-align: center;
-	margin: 1rem;
 	padding: 0 1rem;
 }
 
-nav > div[role="dropdown-menu"] > form:hover {
+nav > div[role="dropdown-menu"] > a:hover, nav > div[role="dropdown-menu"] > form:hover {
 	background-color: #373737;
 }
 
-nav > div[role="dropdown-menu"] > form > input[type="submit"] {
+nav > div[role="dropdown-menu"] input[type="submit"] {
 	background-color: #0000;
 	border: none;
 	color: #fff;
-	padding: 1rem .25rem;
+	padding: .65rem .25rem;
 	cursor: pointer;
 }
 
-nav > div[role="dropdown-menu"] > form > img {
-	height: 20px;
+nav > div[role="dropdown-menu"] img {
+	height: 15px;
 }
 

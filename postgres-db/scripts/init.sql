@@ -16,7 +16,7 @@ CREATE TABLE USERS (
 --- Insert some pre-fabricated users
 
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-VALUES ('admin', 'admin', '123', '', CURRENT_DATE, 'Admin');
+VALUES ('admin', 'Admin', '123', 'transaction.app@mail.com', CURRENT_DATE, 'Admin');
 
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
 VALUES ('Yozef', 'Yozef Baruch', 'yozefb27', 'yozefb@mail.com', CURRENT_DATE, 'User');

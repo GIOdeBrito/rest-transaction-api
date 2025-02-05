@@ -35,7 +35,7 @@ namespace BackEndApi.Database
 				this.connection = new NpgsqlConnection(this.connectionString);
 				connection.Open();
 
-				Console.WriteLine("Database connection open");
+				Console.WriteLine("Database connection openned");
 			}
 			catch(Exception ex)
 			{
@@ -131,6 +131,12 @@ namespace BackEndApi.Database
 							if(columnType == typeof(string))
 							{
 								rowValue = reader.GetString(i);
+							}
+
+							// Date type
+							if(columnType == typeof(DateTime))
+							{
+								rowValue = reader.GetDateTime(i);
 							}
 
 							//Console.WriteLine($"Row: {row} Value: {rowValue}");

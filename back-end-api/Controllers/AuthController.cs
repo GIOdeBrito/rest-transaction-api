@@ -35,9 +35,15 @@ namespace BackEndApi.Controllers
 
 			int Id = rows[0].Id ?? 0;
 			string Name = rows[0].Name;
+			string CreatedAt = rows[0].CreatedAt.ToString();
+			string Role = rows[0].Role;
+
+			Console.WriteLine(rows[0].CreatedAt);
 
 			HttpContext.Session.SetInt32("UserId", Id);
 			HttpContext.Session.SetString("UserName", Name);
+			HttpContext.Session.SetString("UserCreated", CreatedAt);
+			HttpContext.Session.SetString("UserRole", Role);
 
 			return LocalRedirect("~/");
 		}

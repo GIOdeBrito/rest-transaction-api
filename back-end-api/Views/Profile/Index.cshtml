@@ -1,0 +1,13 @@
+@* Loads main navbar *@
+@await Html.PartialAsync("_Navbar")
+
+<article class="main-article">
+	<h1>@ViewData["Username"]</h1>
+	<h2>Role: @ViewData["Role"]</h2>
+	<h2>Creation date: @ViewData["CreationTime"]</h2>
+</article>
+
+@section Style {
+	<link rel="stylesheet" href="/style/nav.css">
+	<link rel="stylesheet" href="/style/profile.css">
+}
