@@ -14,18 +14,24 @@ CREATE TABLE USERS (
 );
 
 --- Insert some pre-fabricated users
+--- I have also decided to set their respective hashed passwords over
+--- the insert queries for not having to memorize them
 
+-- Pwd 123
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-VALUES ('admin', 'Admin', '123', 'transaction.app@mail.com', CURRENT_DATE, 'Admin');
+VALUES ('admin', 'Admin', 'AQAAAAIAAYagAAAAEGKnL4n850kAtjZYj5C/OeWb4rJe8xAgiwlu19VQJcOy5uEUG5/C2aDCVbp3hvZJww==', 'transaction.app@mail.com', CURRENT_DATE, 'Admin');
 
+-- Pwd yozefb27
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-VALUES ('Yozef', 'Yozef Baruch', 'yozefb27', 'yozefb@mail.com', CURRENT_DATE, 'User');
+VALUES ('Yozef', 'Yozef Baruch', 'AQAAAAIAAYagAAAAEFwriMntsVBpDmn5/RV86srtDidkBwajUO9r6oGDy79ZsqaR876vYgGaUbWQw+UQ9Q==', 'yozefb@mail.com', CURRENT_DATE, 'User');
 
+-- Pwd reh1906
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-VALUES ('Robert', 'Robert Ervin', 'reh1906', 'reh@mail.com', CURRENT_DATE, 'User');
+VALUES ('Robert', 'Robert Ervin', 'AQAAAAIAAYagAAAAEBsLWwl7YSDDTmkVKj+CLSvQPelHACfG2Ycz6yKWs7LgCTKW0OBy7vr2Aj0cXNul8w==', 'reh@mail.com', CURRENT_DATE, 'User');
 
+-- Pwd ladonis1996
 INSERT INTO USERS (NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-VALUES ('Lea', 'Lea Adonis', 'ladonis1996', 'leadonis@mail.com', CURRENT_DATE, 'User');
+VALUES ('Lea', 'Lea Adonis', 'AQAAAAIAAYagAAAAEGFd6dnASgjinbgXR4E83EYch7Cp7eJ/TB/mgDzh5/K7SGD2gs+1MB8ZyMMtmB5+xg==', 'leadonis@mail.com', CURRENT_DATE, 'User');
 
 --- Create the transaction history table
 

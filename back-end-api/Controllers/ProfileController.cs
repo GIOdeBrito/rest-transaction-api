@@ -16,12 +16,12 @@ namespace BackEndApi.Controllers
 				return LocalRedirect("~/login");
 			}
 
-			string Username = HttpContext.Session.GetString("UserName");
+			string Fullname = HttpContext.Session.GetString("UserFullName");
 			string Role = HttpContext.Session.GetString("UserRole");
 			string Created = HttpContext.Session.GetString("UserCreated");
 
-			ViewData["Title"] = Username + "'s Profile";
-			ViewData["Username"] = Username;
+			ViewData["Title"] = Fullname + "'s Profile";
+			ViewData["FullName"] = Fullname;
 			ViewData["Role"] = Role;
 			ViewData["CreationTime"] = Created;
 

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using BackEndApi.Models;
+using BackEndApi.Models.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
 

@@ -5,7 +5,7 @@
 	<h1>@ViewData["Title"]</h1>
 </header>
 
-<main class="auto-center">
+<main class="auto-center text-center">
 	<form class="form-vertical" action="/api/v1/auth/login" method="POST">
 		<div>
 			<input class="input-control" name="Name" type="text" placeholder="E-mail" required>
@@ -16,5 +16,9 @@
 		</div>
 
 		<input class="b b-regular" type="submit" value="Submit">
+
+		<div>
+			<a href="/signin">Create account</a>
+		</div>
 	</form>
 </main>

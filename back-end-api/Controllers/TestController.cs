@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using BackEndApi.Models;
+using BackEndApi.Models.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
 
@@ -45,6 +45,14 @@ namespace BackEndApi.Controllers
 		public IActionResult UserAuthTest ()
 		{
 			return Ok("Allowed");
+		}
+
+		[HttpGet("hashpwd")]
+		public IActionResult UserAuthTest ([FromQuery(Name = "pwd")] string password)
+		{
+			string hash = PasswordHash.HashPassword(password);
+
+			return Ok(hash);
 		}
 	}
 }

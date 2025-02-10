@@ -161,6 +161,43 @@ namespace BackEndApi.Database
 			return items.ToArray();
 		}
 
+		public bool Execute (string sql, object? sqlParams = null)
+		{
+			bool result = false;
+
+			try
+			{
+				this.ConnectTo();
+
+				cmd = new NpgsqlCommand(sql, this.connection);
+
+				if(sqlParams is not null)
+				{
+					Dictionary<string, dynamic> acquiredParams = ExtractParameters(sqlParams);
+
+					// Bind query params
+					foreach(KeyValuePair<string, dynamic> kvp in acquiredParams)
+					{
+						cmd.Parameters.AddWithValue(kvp.Key, kvp.Value);
+					}
+				}
+
+				cmd.ExecuteNonQuery();
+
+				result = true;
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine($"Could not perform non query: {ex}");
+			}
+			finally
+			{
+				this.Close();
+			}
+
+			return result;
+		}
+
 		private Dictionary<string, dynamic> ExtractParameters (object sqlparams)
 		{
 			Dictionary<string, dynamic> list = new ();
