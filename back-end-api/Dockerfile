@@ -28,6 +28,7 @@ RUN chown -R user:usergroup /app
 
 USER user
 
+# Comment the line below to run the application in Production mode
 ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Command to run the application when the container starts

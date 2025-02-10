@@ -15,9 +15,12 @@ builder.Services.AddHealthChecks();
 builder.Services.AddMvc();
 builder.Services.AddDistributedMemoryCache();
 
+// Add swagger generator and configuration
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddSession(options =>
 {
-	// Session expires if for two minutes there is no activity
+	// Session expires if there is no activity for two minutes
 	options.IdleTimeout = TimeSpan.FromSeconds(120);
 });
 
@@ -59,9 +62,17 @@ else
 {
 	app.MapHealthChecks("/health");
 	logger.LogInformation("Development");
+
+	app.UseSwaggerUI(c =>
+	{
+	    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transaction API V1");
+	});
+
+	// Enables swagger middleware
+	app.UseSwagger();
 }
 
-// Map endpoints
+// Map controllers
 app.MapControllers();
 
 // Authentication

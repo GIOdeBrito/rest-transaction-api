@@ -5,6 +5,7 @@ using BackEndApi.Models.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
 
+#if DEBUG
 namespace BackEndApi.Controllers
 {
 	[ApiController]
@@ -56,3 +57,4 @@ namespace BackEndApi.Controllers
 		}
 	}
 }
+#endif
