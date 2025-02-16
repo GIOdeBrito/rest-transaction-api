@@ -30,7 +30,8 @@ namespace BackEndApi.Controllers
 			// No such user, then returns to login page
 			if(rows.Length == 0)
 			{
-				return LocalRedirect("~/login");
+				//return LocalRedirect("~/login");
+				return BadRequest(new { error = true, result = "User not found." });
 			}
 
 			// Gets the matched user
@@ -39,7 +40,8 @@ namespace BackEndApi.Controllers
 			// Checks whether the passwords are also a match
 			if(!PasswordHash.BalancePasswords(user.Secret, row.Secret))
 			{
-				return LocalRedirect("~/login");
+				//return LocalRedirect("~/login");
+				return BadRequest(new { error = true, result = "Login or password does not match." });
 			}
 
 			int Id = row.Id ?? 0;
@@ -54,7 +56,7 @@ namespace BackEndApi.Controllers
 			HttpContext.Session.SetString("UserCreated", CreatedAt);
 			HttpContext.Session.SetString("UserRole", Role);
 
-			return LocalRedirect("~/");
+			return Ok("~/");
 		}
 
 		[HttpPost("logoff")]

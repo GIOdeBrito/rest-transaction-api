@@ -1,13 +1,24 @@
-version: '3'
-
 services:
-    app:
+    asp-app:
         container_name: trn-backend-container
         build:
             context: .
             dockerfile: back-end-api/Dockerfile
         ports:
             - "5000:8080"
+        networks:
+            - transaction-network
+        tty: true
+    node-app:
+        container_name: node-frontend-container
+        environment:
+            # Secret for testing purposes only. Do NOT use in production.
+            SESSION_SECRET: km9uGbhByLUY4gczAeWPqf
+        build:
+            context: .
+            dockerfile: node-front-end/Dockerfile
+        ports:
+            - "3000:8080"
         networks:
             - transaction-network
         tty: true

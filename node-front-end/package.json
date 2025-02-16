@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+	"ejs": "^3.1.8",
+	"express-ejs-layouts": "^2.5.1",
+	"express-session": "^1.18.1"
+  },
+  "name": "node-front-end",
+  "version": "1.0.0",
+  "main": "src/app.cjs",
+  "scripts": {
+    "start": "node src/app.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
