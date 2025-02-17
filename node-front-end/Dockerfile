@@ -6,5 +6,6 @@ COPY node-front-end/package.json .
 RUN npm install
 
 COPY node-front-end/. .
+COPY node-front-end/.env .
 
 CMD ["npm", "run", "start"]

@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const app = express();
 
-const routes = require('./routes.cjs');
+const routes = require('./routes/routes.cjs');
 
 // EJS view engine
 app.set('view engine', 'ejs');
@@ -21,12 +21,15 @@ app.set('layout', path.join(__dirname, 'layout/main.ejs'));
 // Use static public folder
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
-// For JSON
+// For parsing form data
 app.use(express.urlencoded({ extended: true }));
+
+// For parsing JSON
+app.use(express.json());
 
 // Use session for the application
 app.use(session({
-	secret: process.env.SESSION_SECRET ?? 'we4ksecr3t',
+	secret: process.env?.SESSION_SECRET ?? 'we4ksecr3t',
 	resave: false,
 	saveUninitialized: false,
 	cookie: {

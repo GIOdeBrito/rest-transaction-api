@@ -18,14 +18,6 @@ builder.Services.AddDistributedMemoryCache();
 // Add swagger generator and configuration
 builder.Services.AddSwaggerGen();
 
-/*
-builder.Services.AddSession(options =>
-{
-	// Session expires if there is no activity for two minutes
-	options.IdleTimeout = TimeSpan.FromSeconds(120);
-});
-*/
-
 // Add Bearer authentication
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
 {
@@ -80,12 +72,6 @@ app.MapControllers();
 // Authentication
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Allow access to the wwwroot folder
-//app.UseStaticFiles();
-
-// Allows for user session creation
-//app.UseSession();
 
 // Run the application
 app.Run();
