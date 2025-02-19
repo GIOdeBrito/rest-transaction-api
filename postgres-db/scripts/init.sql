@@ -1,5 +1,5 @@
 
---- PostgresSQL database start
+--- PostgresSQL database initialization script
 
 --- Create the users table
 

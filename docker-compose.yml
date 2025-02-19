@@ -5,7 +5,7 @@ services:
             context: .
             dockerfile: back-end-api/Dockerfile
         ports:
-            - "5000:8080"
+            - "${ASP_PORT}:8080"
         networks:
             - transaction-network
         tty: true
@@ -18,7 +18,7 @@ services:
             context: .
             dockerfile: node-front-end/Dockerfile
         ports:
-            - "3000:8080"
+            - "${NODE_PORT}:8080"
         networks:
             - transaction-network
         tty: true
@@ -34,7 +34,7 @@ services:
             context: .
             dockerfile: postgres-db/Dockerfile
         ports:
-            - "5100:5432"
+            - "${DB_PORT}:5432"
         networks:
             - transaction-network
         tty: true

@@ -12,7 +12,7 @@ namespace BackEndApi.Controllers
 	public class AuthController : Controller
 	{
 		[HttpPost("registernew")]
-		public IActionResult RegisterNewUser ([FromForm] UserCreateForm user)
+		public IActionResult RegisterNewUser ([FromBody] UserCreateForm user)
 		{
 			if(user is null)
 			{
@@ -40,11 +40,11 @@ namespace BackEndApi.Controllers
 
 			if(!success)
 			{
-				Console.WriteLine("Error. Could not insert data into database.");
-				return LocalRedirect("~/signin");
+				//Console.WriteLine("Error. Could not insert data into database.");
+				return BadRequest(new { error = true, result = "Malformed form data." });
 			}
 
-			return LocalRedirect("~/login");
+			return Ok(new { result = true });
 		}
 	}
 }

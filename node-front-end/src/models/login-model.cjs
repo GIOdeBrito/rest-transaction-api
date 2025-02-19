@@ -1,4 +1,6 @@
 
+const { httpPost } = require('../helpers/http.cjs');
+
 class LoginModel
 {
 	static async requestLogin (name, secret)
@@ -8,18 +10,11 @@ class LoginModel
 			Secret: secret
 		};
 
-		let response = await fetch('http://asp-app:8080/api/v1/login/login',
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(obj)
-		});
+		const url = 'http://asp-app:8080/api/v1/login/login';
 
-		let json = await response.json();
+		let response = await httpPost(url, obj);
 
-		return json;
+		return response;
 	}
 }
 

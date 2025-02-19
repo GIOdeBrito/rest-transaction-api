@@ -13,6 +13,7 @@ router.get('/login', LoginController.index);
 router.get('/signin', SigninController.index);
 
 router.post('/api/v1/login', LoginController.login);
+router.post('/api/v1/registration', SigninController.createNewUser);
 
 if(process.env?.IS_DEVELOPMENT === 'true')
 {

@@ -3,21 +3,21 @@
 </header>
 
 <main class="auto-center">
-	<form class="form-vertical" action="/api/v1/auth/registernew" method="POST">
+	<form class="form-vertical" action="/api/v1/registration" method="POST">
 		<div>
-			<input class="input-control" name="Name" type="text" placeholder="First name" required>
+			<input class="input-control" name="name" type="text" placeholder="First name" required>
 		</div>
 
 		<div>
-			<input class="input-control" name="Surname" type="text" placeholder="Surname" required>
+			<input class="input-control" name="surname" type="text" placeholder="Surname" required>
 		</div>
 
 		<div>
-			<input class="input-control" name="Secret" type="password" placeholder="Password" required>
+			<input class="input-control" name="secret" type="password" placeholder="Password" required>
 		</div>
 
 		<div>
-			<input class="input-control" name="Mail" type="text" placeholder="user@mail.com" required>
+			<input class="input-control" name="mail" type="text" placeholder="user@mail.com" required>
 		</div>
 
 		<input class="b b-regular" type="submit" value="Submit">
