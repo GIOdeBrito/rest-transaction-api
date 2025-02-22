@@ -8,7 +8,12 @@ class HomeController
 			res.redirect('/login');
 		}
 
-		res.render('home', { title: 'Home' });
+		const data = {
+			title: 'Home',
+			name: req.session.name
+		};
+
+		res.render('home', data);
 	}
 }
 

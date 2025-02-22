@@ -19,10 +19,12 @@ namespace BackEndApi.Controllers
 				return BadRequest(new { error = true, result = "Malformed form data." });
 			}
 
+			string hash = PasswordHash.HashPassword(user.Secret);
+
 			object nonQueryParams = new {
 				Nickname = user.Name,
 				Fullname = $"{user.Name} {user.Surname}",
-				Secret = user.Secret,
+				Secret = hash,
 				Mail = user.Mail
 			};
 

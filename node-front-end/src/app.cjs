@@ -29,12 +29,12 @@ app.use(express.json());
 
 // Use session for the application
 app.use(session({
-	secret: process.env?.SESSION_SECRET ?? 'we4ksecr3t',
+	secret: process.env?.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
 		maxAge: 3000,
-		httpOnly: false,
+		httpOnly: true,
 		secure: false
 	}
 }));

@@ -15,15 +15,17 @@ class LoginController
 			let name = req.body.name;
 			let secret = req.body.secret;
 
-			let json = await LoginModel.requestLogin(name, secret);
+			let result = await LoginModel.requestLogin(name, secret, req.session);
 
-			if(json?.error === true)
+			if(!result)
 			{
 				res.redirect("/login");
 				return;
 			}
 
-			res.json(json);
+			console.log("session", req.session);
+
+			res.redirect("/");
 		}
 		catch(ex)
 		{
