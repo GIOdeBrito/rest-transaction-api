@@ -1,6 +1,4 @@
 
-//const http = require('node:http');
-
 class TestController
 {
 	static async request (req, res)
@@ -10,6 +8,11 @@ class TestController
 		let json = await response.json();
 
 		res.send({ result: JSON.stringify(json), message: "This is a response from the AspNetCore service." });
+	}
+
+	static showSession (req, res)
+	{
+		res.json(req.session);
 	}
 }
 

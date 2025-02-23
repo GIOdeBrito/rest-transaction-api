@@ -1,4 +1,6 @@
 
+/* Containers */
+
 .auto-center {
 	margin: auto;
 }
@@ -12,6 +14,14 @@
 	flex-direction: column;
 	gap: 1rem;
 }
+
+.top-header {
+	padding: 0 1rem;
+	background-color: var(--color-dark);
+	color: #fff;
+}
+
+/* Inputs */
 
 .b {
 	padding: .3rem .25rem;
@@ -43,9 +53,17 @@
 	box-shadow: 0 0 .25rem #00000059;
 }
 
+/* Attributes */
+
 .color-white {
 	color: #fff;
 }
+
+.head-1 {
+	font-size: 1rem;
+}
+
+/* Nav */
 
 .nav-icon {
 	height: 30px;
@@ -55,10 +73,4 @@
 
 .nav-icon:hover {
 	transform: scale(1.065);
-}
-
-.top-header {
-	padding: 1rem;
-	background-color: var(--color-dark);
-	color: #fff;
 }
