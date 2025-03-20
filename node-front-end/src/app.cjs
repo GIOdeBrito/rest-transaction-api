@@ -29,7 +29,7 @@ app.use(express.json());
 
 // Use session for the application
 app.use(session({
-	secret: process.env?.SESSION_SECRET,
+	secret: process.env?.SESSION_SECRET ?? "km9uGbhByLUY4gczAeWPqf",
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
@@ -44,4 +44,4 @@ app.use(session({
 app.use(routes);
 
 const PORT = 8080;
-app.listen(PORT, () => console.log(`App running on Port::${PORT}`));
+app.listen(PORT, () => console.log(`App is running on port ${PORT}`));

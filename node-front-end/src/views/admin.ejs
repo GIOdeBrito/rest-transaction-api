@@ -1,7 +1,18 @@
-<header class="top-header">
-	<h1 class="head-1">Admin Panel</h1>
-</header>
 
-<article class="">
+<%- include("../partials/admin-header") %>
 
+<article class="auto-center">
+	<section class="admin-options-section">
+		<a href="/admin/view/users">
+			<img src="https://cdn-icons-png.flaticon.com/512/681/681494.png" alt="users">
+			<p>All users</p>
+		</a>
+
+		<a href="/admin/view/transactions">
+			<img src="https://cdn-icons-png.flaticon.com/512/879/879890.png" alt="users">
+			<p>Transactions</p>
+		</a>
+	</section>
 </article>
+
+<link rel="stylesheet" href="/public/style/admin.css">

@@ -11,9 +11,9 @@ services:
         tty: true
     node-app:
         container_name: node-frontend-container
-        environment:
+        #environment:
             # Secret for testing purposes only. Do NOT use in production.
-            SESSION_SECRET: km9uGbhByLUY4gczAeWPqf
+            #SESSION_SECRET: km9uGbhByLUY4gczAeWPqf
         build:
             context: .
             dockerfile: node-front-end/Dockerfile
@@ -26,8 +26,8 @@ services:
         container_name: postgres-db-container
         #user: postgres
         environment:
+            # For testing purposes only. Do NOT use in production.
             POSTGRES_USER: master
-            # Password for testing purposes only. Do NOT use in production.
             POSTGRES_PASSWORD: 123
             POSTGRES_DB: main
         build:

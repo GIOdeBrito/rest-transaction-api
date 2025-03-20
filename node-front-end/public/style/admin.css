@@ -1,0 +1,24 @@
+
+.admin-options-section {
+	display: flex;
+	gap: 1rem;
+}
+
+.admin-options-section > a {
+	background-color: var(--color-dark);
+	color: #fff;
+	padding: 1rem 2rem;
+	border-radius: 1rem;
+	cursor: pointer;
+	transition: transform 120ms ease;
+	text-align: center;
+}
+
+.admin-options-section > a:hover {
+	transform: scale(1.08);
+}
+
+.admin-options-section > a img {
+	height: 5rem;
+	filter: invert(1);
+}
