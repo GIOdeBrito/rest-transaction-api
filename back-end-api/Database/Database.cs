@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using Npgsql;
-using dotenv.net;
 using BackEndApi.Models;
 
 namespace BackEndApi.Database
@@ -14,13 +13,15 @@ namespace BackEndApi.Database
 
 		public PostgresDatabase ()
 		{
-			string dbUser = Environment.GetEnvironmentVariable("DATABASE_USER");
-			string dbSecret = Environment.GetEnvironmentVariable("DATABASE_SCRT");
-			string dbName = Environment.GetEnvironmentVariable("DATABASE_NAME");
-			string dbPort = Environment.GetEnvironmentVariable("DATABASE_PORT");
-			string dbHost = Environment.GetEnvironmentVariable("DATABASE_HOST");
+			string dbUser = Environment.GetEnvironmentVariable("POSTGRES_LOGIN");
+			string dbSecret = Environment.GetEnvironmentVariable("POSTGRES_PASSWD");
+			string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB");
+			string dbPort = Environment.GetEnvironmentVariable("POSTGRES_PORT");
+			string dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST");
 
 			this.connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
+
+			Console.WriteLine($"\n {this.connectionString} \n");
 		}
 
 		~PostgresDatabase ()

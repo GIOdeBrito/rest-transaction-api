@@ -17,7 +17,7 @@ class LoginModel
 			Secret: secret
 		};
 
-		const url = 'http://asp-app:8080/api/v1/login/login';
+		const url = 'http://net-app-dev:8080/api/v1/login/login';
 
 		let response = await httpPost(url, obj);
 

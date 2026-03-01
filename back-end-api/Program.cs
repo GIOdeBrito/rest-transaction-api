@@ -2,12 +2,8 @@ using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Load environment variables
-DotEnv.Load();
 
 // Add some base services
 builder.Services.AddControllers();
@@ -75,3 +71,4 @@ app.UseAuthorization();
 
 // Run the application
 app.Run();
+

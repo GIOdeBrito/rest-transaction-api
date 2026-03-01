@@ -1,7 +1,4 @@
 .env
 
-back-end-api/bin
-back-end-api/obj
-back-end-api/.env
-
-node-front-end/.env
+bin/
+obj/

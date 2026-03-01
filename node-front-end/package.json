@@ -9,10 +9,11 @@
   "version": "1.0.0",
   "main": "src/app.cjs",
   "scripts": {
+	"dev": "node --watch --env-file=.env src/app.cjs",
 	"start": "node --env-file=.env src/app.cjs"
   },
   "keywords": [],
-  "author": "",
+  "author": "Giordano de Brito",
   "license": "ISC",
   "description": ""
 }
