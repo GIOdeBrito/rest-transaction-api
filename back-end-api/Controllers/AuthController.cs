@@ -1,52 +1,45 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using BackEndApi.Models.User;
-using BackEndApi.Services;
 using BackEndApi.Database;
+using BackEndApi.Services;
+using System.Threading.Tasks;
 
-namespace BackEndApi.Controllers
+[ApiController]
+[Route("/api/v1/[controller]")]
+public class AuthController : ControllerBase
 {
-	[ApiController]
-	[Route("/api/v1/[controller]")]
-	public class AuthController : Controller
-	{
-		[HttpPost("registernew")]
-		public IActionResult RegisterNewUser ([FromBody] UserCreateForm user)
-		{
-			if(user is null)
-			{
-				return BadRequest(new { error = true, result = "Malformed form data." });
-			}
+    private readonly PostgresDatabase _db;
 
-			string hash = PasswordHash.HashPassword(user.Secret);
+    public AuthController(PostgresDatabase db)
+    {
+        _db = db;
+    }
 
-			object nonQueryParams = new {
-				Nickname = user.Name,
-				Fullname = $"{user.Name} {user.Surname}",
-				Secret = hash,
-				Mail = user.Mail
-			};
+    [HttpPost("registernew")]
+    public async Task<IActionResult> RegisterNewUser([FromBody] UserCreateForm user)
+    {
+        if (user == null || string.IsNullOrWhiteSpace(user.Name) ||
+            string.IsNullOrWhiteSpace(user.Surname) || string.IsNullOrWhiteSpace(user.Secret) ||
+            string.IsNullOrWhiteSpace(user.Mail))
+        {
+            return BadRequest(new { error = true, message = "Invalid registration data" });
+        }
 
-			string sql = @"
-				INSERT INTO
-					USERS
-					(NAME, FULLNAME, SECRET, MAIL, CREATEDAT, ROLE)
-				VALUES
-					(@Nickname, @Fullname, @Secret, @Mail, CURRENT_DATE, 'User');
-			";
+        string hash = PasswordHash.HashPassword(user.Secret);
 
-			PostgresDatabase db = new ();
+        var success = await _db.ExecuteAsync(@"
+            INSERT INTO users (name, fullname, secret, mail, createdat, role)
+            VALUES (@Nickname, @Fullname, @Secret, @Mail, CURRENT_DATE, 'User')",
+            new
+            {
+                Nickname = user.Name,
+                Fullname = $"{user.Name} {user.Surname}",
+                Secret   = hash,
+                Mail     = user.Mail
+            });
 
-			bool success = db.Execute(sql, nonQueryParams);
-
-			if(!success)
-			{
-				//Console.WriteLine("Error. Could not insert data into database.");
-				return BadRequest(new { error = true, result = "Malformed form data." });
-			}
-
-			return Ok(new { result = true });
-		}
-	}
+        return success
+            ? Ok(new { result = true })
+            : BadRequest(new { error = true, message = "Registration failed" });
+    }
 }

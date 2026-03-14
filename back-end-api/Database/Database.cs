@@ -1,214 +1,114 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Npgsql;
-using BackEndApi.Models;
 
 namespace BackEndApi.Database
 {
-	public class PostgresDatabase
-	{
-		private string connectionString = "";
-		private NpgsqlConnection? connection = null;
-		private NpgsqlCommand? cmd = null;
+    public class PostgresDatabase : IDisposable
+    {
+        private readonly NpgsqlDataSource _dataSource;
 
-		public PostgresDatabase ()
-		{
-			string dbUser = Environment.GetEnvironmentVariable("POSTGRES_LOGIN");
-			string dbSecret = Environment.GetEnvironmentVariable("POSTGRES_PASSWD");
-			string dbName = Environment.GetEnvironmentVariable("POSTGRES_DB");
-			string dbPort = Environment.GetEnvironmentVariable("POSTGRES_PORT");
-			string dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+        public PostgresDatabase()
+        {
+            var connString = BuildConnectionString();
+            _dataSource = NpgsqlDataSource.Create(connString);
+            // Optional: Console.WriteLine(connString);
+        }
 
-			this.connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbSecret}";
+        private static string BuildConnectionString()
+        {
+            var user   = Environment.GetEnvironmentVariable("POSTGRES_LOGIN")   ?? throw new InvalidOperationException("POSTGRES_LOGIN missing");
+            var pass   = Environment.GetEnvironmentVariable("POSTGRES_PASSWD") ?? throw new InvalidOperationException("POSTGRES_PASSWD missing");
+            var db     = Environment.GetEnvironmentVariable("POSTGRES_DB")     ?? throw new InvalidOperationException("POSTGRES_DB missing");
+            var port   = Environment.GetEnvironmentVariable("POSTGRES_PORT")   ?? "5432";
+            var host   = Environment.GetEnvironmentVariable("POSTGRES_HOST")   ?? "localhost";
 
-			Console.WriteLine($"\n {this.connectionString} \n");
-		}
+            return $"Host={host};Port={port};Database={db};Username={user};Password={pass};Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;";
+        }
 
-		~PostgresDatabase ()
-		{
-			this.Close();
-		}
+        public async Task<T[]> QueryAsync<T>(string sql, object? parameters = null) where T : new()
+        {
+            var items = new List<T>();
 
-		private void ConnectTo ()
-		{
-			try
-			{
-				this.connection = new NpgsqlConnection(this.connectionString);
-				connection.Open();
+            await using var conn = await _dataSource.OpenConnectionAsync();
+            await using var cmd  = conn.CreateCommand();
+            cmd.CommandText = sql;
 
-				Console.WriteLine("Database connection openned");
-			}
-			catch(Exception ex)
-			{
-				Console.WriteLine($"Could not open connection: {ex}");
-			}
-		}
+            if(parameters != null)
+            {
+                var paramDict = ExtractParameters(parameters);
+                foreach (var kv in paramDict)
+                {
+                    cmd.Parameters.AddWithValue(kv.Key, kv.Value ?? DBNull.Value);
+                }
+            }
 
-		private void Close ()
-		{
-			if(this.connection is null)
-			{
-				return;
-			}
+            await using var reader = await cmd.ExecuteReaderAsync();
 
-			this.connection.Close();
-			this.connection.Dispose();
-			this.connection = null;
+            while(await reader.ReadAsync())
+            {
+                var row = new T();
 
-			ClearCommand();
+                for(int i = 0; i < reader.FieldCount; i++)
+                {
+                    string colName = reader.GetName(i);
 
-			Console.WriteLine("Database connection closed");
-		}
+                    var prop = typeof(T).GetProperty(colName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                    var field = prop == null
+                        ? typeof(T).GetField(colName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+                        : null;
 
-		private void ClearCommand ()
-		{
-			if(this.cmd is null)
-			{
-				return;
-			}
+                    var member = (MemberInfo?)prop ?? field;
+                    if (member == null) continue;
 
-			//this.cmd.Close();
-			this.cmd.Dispose();
-			this.cmd = null;
-		}
+                    object? value = reader.IsDBNull(i) ? null : reader.GetValue(i);
 
-		public T[] Query<T>(string sql, object? sqlParams = null) where T : new()
-		{
-			List<T> items = new();
+                    if (member is PropertyInfo p) p.SetValue(row, value);
+                    else if (member is FieldInfo f)  f.SetValue(row, value);
+                }
 
-			try
-			{
-				this.ConnectTo();
+                items.Add(row);
+            }
 
-				cmd = new NpgsqlCommand(sql, this.connection);
+            return items.ToArray();
+        }
 
-				if(sqlParams is not null)
-				{
-					Dictionary<string, dynamic> acquiredParams = ExtractParameters(sqlParams);
+        public async Task<bool> ExecuteAsync(string sql, object? parameters = null)
+        {
+            await using var conn = await _dataSource.OpenConnectionAsync();
+            await using var cmd  = conn.CreateCommand();
+            cmd.CommandText = sql;
 
-					// Bind query params
-					foreach(KeyValuePair<string, dynamic> kvp in acquiredParams)
-					{
-						//Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
-						cmd.Parameters.AddWithValue(kvp.Key, kvp.Value);
-					}
-				}
+            if(parameters != null)
+            {
+                var paramDict = ExtractParameters(parameters);
+                foreach (var kv in paramDict)
+                {
+                    cmd.Parameters.AddWithValue(kv.Key, kv.Value ?? DBNull.Value);
+                }
+            }
 
-				using(NpgsqlDataReader reader = cmd.ExecuteReader())
-				{
-					while(reader.Read())
-					{
-						T row = new T();
+            await cmd.ExecuteNonQueryAsync();
+            return true;
+        }
 
-						for(int i = 0; i < reader.FieldCount; i++)
-						{
-							// Columns are always strings
-							string columnName = reader.GetName(i);
+        private static Dictionary<string, object?> ExtractParameters(object obj)
+        {
+            var dict = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
-							FieldInfo? field = typeof(T).GetField(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-							PropertyInfo? property = null;
+            foreach (var prop in obj.GetType().GetProperties())
+            {
+                dict[prop.Name] = prop.GetValue(obj);
+            }
 
-							if(field is null)
-							{
-								// If no field was found, looks for a property instead
-								property = typeof(T).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-							}
+            return dict;
+        }
 
-							// If no property or field was found, skip this iteration
-							if(field is null && property is null)
-							{
-								continue;
-							}
-
-							// The type of the field varies
-							Type columnType = reader.GetFieldType(i);
-							dynamic? rowValue = null;
-
-							if(columnType == typeof(int))
-							{
-								rowValue = reader.GetInt32(i);
-							}
-
-							if(columnType == typeof(string))
-							{
-								rowValue = reader.GetString(i);
-							}
-
-							// Date type
-							if(columnType == typeof(DateTime))
-							{
-								rowValue = reader.GetDateTime(i);
-							}
-
-							//Console.WriteLine($"Row: {row} Value: {rowValue}");
-
-							field?.SetValue(row, rowValue);
-							property?.SetValue(row, rowValue);
-						}
-
-						items.Add(row);
-					}
-				}
-			}
-			catch(Exception ex)
-			{
-				Console.WriteLine($"Could not perform query: {ex}");
-			}
-			finally
-			{
-				this.Close();
-			}
-
-			return items.ToArray();
-		}
-
-		public bool Execute (string sql, object? sqlParams = null)
-		{
-			bool result = false;
-
-			try
-			{
-				this.ConnectTo();
-
-				cmd = new NpgsqlCommand(sql, this.connection);
-
-				if(sqlParams is not null)
-				{
-					Dictionary<string, dynamic> acquiredParams = ExtractParameters(sqlParams);
-
-					// Bind query params
-					foreach(KeyValuePair<string, dynamic> kvp in acquiredParams)
-					{
-						cmd.Parameters.AddWithValue(kvp.Key, kvp.Value);
-					}
-				}
-
-				cmd.ExecuteNonQuery();
-
-				result = true;
-			}
-			catch(Exception ex)
-			{
-				Console.WriteLine($"Could not perform non query: {ex}");
-			}
-			finally
-			{
-				this.Close();
-			}
-
-			return result;
-		}
-
-		private Dictionary<string, dynamic> ExtractParameters (object sqlparams)
-		{
-			Dictionary<string, dynamic> list = new ();
-
-			foreach(var property in sqlparams.GetType().GetProperties())
-	        {
-				list.Add(property.Name, property.GetValue(sqlparams));
-	        }
-
-			return list;
-		}
-	}
+        public void Dispose()
+        {
+            _dataSource.Dispose();
+        }
+    }
 }

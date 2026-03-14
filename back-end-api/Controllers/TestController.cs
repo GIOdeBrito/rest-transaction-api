@@ -1,58 +1,61 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using BackEndApi.Models.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
+using System.Threading.Tasks;
 
-namespace BackEndApi.Controllers
+[ApiController]
+[Route("api/v1/[controller]")]
+public class TestController : ControllerBase
 {
-	[ApiController]
-	[Route("api/v1/[controller]")]
-	public class TestController : ControllerBase
-	{
-		[HttpGet("db-test")]
-		public IActionResult DbTest ()
-		{
-			PostgresDatabase db = new ();
+    private readonly PostgresDatabase _db;
 
-			User[] rows = db.Query<User>("SELECT * FROM USERS");
+    public TestController(PostgresDatabase db)
+    {
+        _db = db;
+    }
 
-			foreach(User row in rows.ToArray())
-			{
-				Console.WriteLine($"Name: {row.Name} | Mail: {row.Mail}");
-			}
+    [HttpGet("db-test")]
+    public async Task<IActionResult> DbTest()
+    {
+        var rows = await _db.QueryAsync<User>("SELECT * FROM users");
 
-			return Ok("Done");
-		}
+        foreach (var row in rows)
+        {
+            Console.WriteLine($"Name: {row.Name} | Mail: {row.Mail}");
+        }
 
-		[HttpGet("db-test-bind")]
-		public IActionResult DbTestBind ()
-		{
-			PostgresDatabase db = new ();
+        return Ok("Done");
+    }
 
-			object queryParams = new {
-				Id = 2
-			};
+    [HttpGet("db-test-bind")]
+    public async Task<IActionResult> DbTestBind()
+    {
+        var rows = await _db.QueryAsync<User>(
+            "SELECT * FROM users WHERE id = @Id",
+            new { Id = 2 }
+        );
 
-			User[] rows = db.Query<User>("SELECT * FROM USERS WHERE ID = @Id", queryParams);
+        if (rows.Length == 0) return NotFound();
 
-			return Ok($"ID {rows[0].Id} name: {rows[0].Name}");
-		}
+        var user = rows[0];
+        return Ok($"ID {user.Id} name: {user.Name}");
+    }
 
-		[HttpPost("user-auth")]
-		[Authorize(Roles = "User")]
-		public IActionResult UserAuthTest ()
-		{
-			return Ok("Allowed");
-		}
+    [HttpPost("user-auth")]
+    [Authorize(Roles = "User")]
+    public IActionResult UserAuthTest()
+    {
+        return Ok("Allowed");
+    }
 
-		[HttpGet("hashpwd")]
-		public IActionResult UserAuthTest ([FromQuery(Name = "pwd")] string password)
-		{
-			string hash = PasswordHash.HashPassword(password);
+    [HttpGet("hashpwd")]
+    public IActionResult HashPwd([FromQuery(Name = "pwd")] string password)
+    {
+        if (string.IsNullOrEmpty(password)) return BadRequest("Password required");
 
-			return Ok(hash);
-		}
-	}
+        string hash = PasswordHash.HashPassword(password);
+        return Ok(hash);
+    }
 }

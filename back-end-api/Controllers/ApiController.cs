@@ -1,54 +1,53 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using BackEndApi.Models.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
+using System.Threading.Tasks;
 
-namespace BackEndApi.Controllers
+[ApiController]
+[Route("api/v1")]
+public class ApiController : ControllerBase
 {
-	[ApiController]
-	[Route("api/v1")]
-	public class ApiController : ControllerBase
-	{
-		[HttpGet("time")]
-		public IActionResult Time ()
-		{
-			object json = new
-			{
-				time = DateTime.Now.ToString("HH\\hmm", System.Globalization.DateTimeFormatInfo.InvariantInfo)
-			};
+    private readonly PostgresDatabase _db;
 
-			return Ok(json);
-		}
+    public ApiController(PostgresDatabase db)
+    {
+        _db = db;
+    }
 
-		[HttpPost("token")]
-		public IActionResult GetUserToken ([FromBody] User user)
-		{
-			if(user is null)
-			{
-				return BadRequest(new { error = true, result = "Malformed data on body." });
-			}
+    [HttpGet("time")]
+    public IActionResult Time()
+    {
+        return Ok(new { time = DateTime.Now.ToString("HH\\hmm") });
+    }
 
-			object queryParams = new {
-				Name = user.Name,
-				Secret = user.Secret
-			};
+    [HttpPost("token")]
+    public async Task<IActionResult> GetUserToken([FromBody] User user)
+    {
+        if (user == null || string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Secret))
+        {
+            return BadRequest(new { error = true, message = "Invalid credentials" });
+        }
 
-			PostgresDatabase db = new ();
+        var rows = await _db.QueryAsync<User>(
+            "SELECT * FROM users WHERE name = @Name",
+            new { Name = user.Name }
+        );
 
-			User[] rows = db.Query<User>("SELECT * FROM USERS WHERE NAME = @Name AND SECRET = @Secret", queryParams);
+        if (rows.Length == 0)
+        {
+            return BadRequest(new { error = true, message = "User not found" });
+        }
 
-			if(rows.Length == 0)
-			{
-				return BadRequest(new { error = true, result = "Error! User or credentials are incorrect." });
-			}
+        var dbUser = rows[0];
 
-			user.Role = rows[0].Role;
+        if (!PasswordHash.BalancePasswords(user.Secret, dbUser.Secret))
+        {
+            return BadRequest(new { error = true, message = "Invalid credentials" });
+        }
 
-			string token = JwtToken.GetToken(user);
+        var token = JwtToken.GetToken(dbUser);
 
-			return Ok(new { error = false, result = token });
-		}
-	}
+        return Ok(new { error = false, token });
+    }
 }
