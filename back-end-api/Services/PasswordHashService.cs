@@ -1,23 +1,19 @@
-using System;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 
-namespace BackEndApi.Services
+namespace BackEndApi.Services;
+
+public static class PasswordHash
 {
-	public static class PasswordHash
-	{
-		public static string HashPassword (string password)
-		{
-			PasswordHasher<object> passwordHasher = new();
-			return passwordHasher.HashPassword(null, password);
-		}
+    private static readonly PasswordHasher<object> Hasher = new();
 
-		public static bool BalancePasswords (string userPassword, string hashedPassword)
-		{
-			PasswordHasher<object> passwordHasher = new();
+    public static string Hash(string password)
+    {
+        return Hasher.HashPassword(null, password);
+    }
 
-			var result = passwordHasher.VerifyHashedPassword(null, hashedPassword, userPassword);
-			return result == PasswordVerificationResult.Success;
-		}
-	}
+    public static bool Verify(string provided, string hashed)
+    {
+        var result = Hasher.VerifyHashedPassword(null, hashed, provided);
+        return result == PasswordVerificationResult.Success;
+    }
 }

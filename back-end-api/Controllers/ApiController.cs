@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEndApi.Models.User;
-using BackEndApi.Database;
+using BackEndApi.DTO.User;
 using BackEndApi.Services;
+using BackEndApi.Interfaces;
 using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/v1")]
 public class ApiController : ControllerBase
 {
-    private readonly PostgresDatabase _db;
+	private readonly IUserRepository _userRepo;
 
-    public ApiController(PostgresDatabase db)
+    public ApiController (IUserRepository userRepo)
     {
-        _db = db;
+        _userRepo = userRepo;
     }
 
     [HttpGet("time")]
@@ -29,19 +29,16 @@ public class ApiController : ControllerBase
             return BadRequest(new { error = true, message = "Invalid credentials" });
         }
 
-        var rows = await _db.QueryAsync<User>(
-            "SELECT * FROM users WHERE name = @Name",
-            new { Name = user.Name }
-        );
+		bool userExists = await _userRepo.IsUserByNameAsync(user.Name);
 
-        if (rows.Length == 0)
+        if(!userExists)
         {
             return BadRequest(new { error = true, message = "User not found" });
         }
 
-        var dbUser = rows[0];
+        User? dbUser = await _userRepo.GetUserByNameAsync(user.Name);
 
-        if (!PasswordHash.BalancePasswords(user.Secret, dbUser.Secret))
+        if(dbUser == null || !PasswordHash.Verify(user.Secret, dbUser.Secret))
         {
             return BadRequest(new { error = true, message = "Invalid credentials" });
         }

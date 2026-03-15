@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using BackEndApi.Models.User;
+using BackEndApi.DTO.User;
 using BackEndApi.Database;
 using BackEndApi.Services;
 using System.Threading.Tasks;
@@ -55,7 +55,7 @@ public class TestController : ControllerBase
     {
         if (string.IsNullOrEmpty(password)) return BadRequest("Password required");
 
-        string hash = PasswordHash.HashPassword(password);
+        string hash = PasswordHash.Hash(password);
         return Ok(hash);
     }
 }

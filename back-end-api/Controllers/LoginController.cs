@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEndApi.Models.User;
-using BackEndApi.Database;
+using BackEndApi.DTO.User;
+using BackEndApi.Interfaces;
 using BackEndApi.Services;
 using System.Threading.Tasks;
 
@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 [Route("/api/v1/[controller]")]
 public class LoginController : ControllerBase
 {
-	private readonly PostgresDatabase _db;
+	private readonly IUserRepository _userRepo;
 
-	public LoginController(PostgresDatabase db)
+	public LoginController(IUserRepository userRepo)
 	{
-		_db = db;
+		_userRepo = userRepo;
 	}
 
 	[HttpPost("login")]
@@ -23,19 +23,16 @@ public class LoginController : ControllerBase
 			return BadRequest(new { error = true, message = "Invalid credentials" });
 		}
 
-		var rows = await _db.QueryAsync<User>(
-			"SELECT * FROM users WHERE name = @Name",
-			new { Name = user.Name }
-		);
+		bool isUser = await _userRepo.IsUserByNameAsync(user.Name);
 
-		if(rows.Length == 0)
+		if(!isUser)
 		{
 			return BadRequest(new { error = true, message = "User not found" });
 		}
 
-		var dbUser = rows[0];
+		var dbUser = await _userRepo.GetUserByNameAsync(user.Name);
 
-		if(!PasswordHash.BalancePasswords(user.Secret, dbUser.Secret))
+		if(dbUser == null || !PasswordHash.Verify(user.Secret, dbUser.Secret))
 		{
 			return BadRequest(new { error = true, message = "Invalid credentials" });
 		}

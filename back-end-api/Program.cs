@@ -1,8 +1,10 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using BackEndApi.Models.User;
+using BackEndApi.DTO.User;
 using BackEndApi.Database;
+using BackEndApi.Interfaces;
+using BackEndApi.Repositories;
 using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<PostgresDatabase>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // JWT Authentication
 builder.Services.AddAuthentication("Bearer")

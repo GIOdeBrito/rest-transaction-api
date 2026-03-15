@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEndApi.Models.User;
-using BackEndApi.Database;
+using BackEndApi.DTO.User;
+using BackEndApi.Interfaces;
 using BackEndApi.Services;
 using System.Threading.Tasks;
 
@@ -8,35 +8,25 @@ using System.Threading.Tasks;
 [Route("/api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly PostgresDatabase _db;
+    private readonly IUserRepository _userRepo;
 
-    public AuthController(PostgresDatabase db)
+    public AuthController (IUserRepository userRepo)
     {
-        _db = db;
+        _userRepo = userRepo;
     }
 
     [HttpPost("registernew")]
     public async Task<IActionResult> RegisterNewUser([FromBody] UserCreateForm user)
     {
-        if (user == null || string.IsNullOrWhiteSpace(user.Name) ||
-            string.IsNullOrWhiteSpace(user.Surname) || string.IsNullOrWhiteSpace(user.Secret) ||
-            string.IsNullOrWhiteSpace(user.Mail))
+        if(user == null || string.IsNullOrWhiteSpace(user.Name)
+		|| string.IsNullOrWhiteSpace(user.Surname) || string.IsNullOrWhiteSpace(user.Secret)
+		|| string.IsNullOrWhiteSpace(user.Mail))
         {
             return BadRequest(new { error = true, message = "Invalid registration data" });
         }
 
-        string hash = PasswordHash.HashPassword(user.Secret);
-
-        var success = await _db.ExecuteAsync(@"
-            INSERT INTO users (name, fullname, secret, mail, createdat, role)
-            VALUES (@Nickname, @Fullname, @Secret, @Mail, CURRENT_DATE, 'User')",
-            new
-            {
-                Nickname = user.Name,
-                Fullname = $"{user.Name} {user.Surname}",
-                Secret   = hash,
-                Mail     = user.Mail
-            });
+        string hash = PasswordHash.Hash(user.Secret);
+		bool success = await _userRepo.CreateAsync(user, hash);
 
         return success
             ? Ok(new { result = true })
